@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/theomantz/text-rank#readme",
   "dependencies": {
+    "tokenizr": "^1.6.4",
     "wink-pos-tagger": "^2.2.2"
   }
 }
