@@ -1,0 +1,22 @@
+{
+  "name": "text-rank",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theomantz/text-rank.git"
+  },
+  "keywords": [
+    "textrank"
+  ],
+  "author": "Theo Mantz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theomantz/text-rank/issues"
+  },
+  "homepage": "https://github.com/theomantz/text-rank#readme"
+}
