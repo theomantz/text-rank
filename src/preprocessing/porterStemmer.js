@@ -1,104 +1,95 @@
-// Porter stemmer in Javascript. Few comments, but it's easy to follow against the rules in the original
-// paper, in
-//
-//  Porter, 1980, An algorithm for suffix stripping, Program, Vol. 14,
-//  no. 3, pp 130-137,
-//
-// see also http://www.tartarus.org/~martin/PorterStemmer
+/**
+ * Porter Stemmer algorithm in JavaScript.
+ * The original paper can be found here: https://tartarus.org/martin/PorterStemmer/def.txt
+ * The ES6 class syntax in this file is largely just refactored and updated code from this source: https://tartarus.org/martin/PorterStemmer/
+ */
 
-// Release 1 be 'andargor', Jul 2004
-// Release 2 (substantially revised) by Christopher McKenzie, Aug 2009
+const step2List = {
+  ational: "ate",
+  tional: "tion",
+  enci: "ence",
+  anci: "ance",
+  izer: "ize",
+  bli: "ble",
+  alli: "al",
+  entli: "ent",
+  eli: "e",
+  ousli: "ous",
+  ization: "ize",
+  ation: "ate",
+  ator: "ate",
+  alism: "al",
+  iveness: "ive",
+  fulness: "ful",
+  ousness: "ous",
+  aliti: "al",
+  iviti: "ive",
+  biliti: "ble",
+  logi: "log",
+};
 
-var stemmer = (function () {
-  var step2list = {
-      ational: "ate",
-      tional: "tion",
-      enci: "ence",
-      anci: "ance",
-      izer: "ize",
-      bli: "ble",
-      alli: "al",
-      entli: "ent",
-      eli: "e",
-      ousli: "ous",
-      ization: "ize",
-      ation: "ate",
-      ator: "ate",
-      alism: "al",
-      iveness: "ive",
-      fulness: "ful",
-      ousness: "ous",
-      aliti: "al",
-      iviti: "ive",
-      biliti: "ble",
-      logi: "log",
-    },
-    step3list = {
-      icate: "ic",
-      ative: "",
-      alize: "al",
-      iciti: "ic",
-      ical: "ic",
-      ful: "",
-      ness: "",
-    },
-    c = "[^aeiou]", // consonant
-    v = "[aeiouy]", // vowel
-    C = c + "[^aeiouy]*", // consonant sequence
-    V = v + "[aeiou]*", // vowel sequence
-    mgr0 = "^(" + C + ")?" + V + C, // [C]VC... is m>0
-    meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$", // [C]VC[V] is m=1
-    mgr1 = "^(" + C + ")?" + V + C + V + C, // [C]VCVC... is m>1
-    s_v = "^(" + C + ")?" + v; // vowel in stem
+const step3List = {
+  icate: "ic",
+  ative: "",
+  alize: "al",
+  iciti: "ic",
+  ical: "ic",
+  ful: "",
+  ness: "",
+};
 
-  return function (w) {
-    var stem,
-      suffix,
-      firstch,
-      re,
-      re2,
-      re3,
-      re4,
-      origword = w;
+// RegExp Tests:
+// consonants
+const c = "[^aeiou]";
+// vowels
+const v = "[aeiouy]";
+// a sequence of consonants
+const C = c + "[^aeiouy]*";
+// Vowel sequence
+const V = v + "[aeiou]*";
+// Categorization Tests:
+const mgr0 = "^(" + C + ")?" + V + C; // [C]VC... is m>0
+const meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$"; // [C]VC[V] is m=1
+const mgr1 = "^(" + C + ")?" + V + C + V + C; // [C]VCVC... is m>1
+const s_v = "^(" + C + ")?" + v; // vowel in stem
 
-    if (w.length < 3) {
-      return w;
-    }
+class PorterStemmer {
+  /**
+   *
+   * @param {string} w - a single word string
+   * @returns string
+   */
 
-    firstch = w.substr(0, 1);
-    if (firstch == "y") {
-      w = firstch.toUpperCase() + w.substr(1);
-    }
-
-    // Step 1a
-    re = /^(.+?)(ss|i)es$/;
-    re2 = /^(.+?)([^s])s$/;
-
+  step1a(w) {
+    const re = /^(.+?)(ss|i)es$/;
+    const re2 = /^(.+?)([^s])s$/;
     if (re.test(w)) {
       w = w.replace(re, "$1$2");
     } else if (re2.test(w)) {
       w = w.replace(re2, "$1$2");
     }
+    return w;
+  }
 
-    // Step 1b
-    re = /^(.+?)eed$/;
-    re2 = /^(.+?)(ed|ing)$/;
+  step1b(w) {
+    let re = /^(.+?)eed$/;
+    let re2 = /^(.+?)(ed|ing)$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
+      let rootArr = re.exec(w);
       re = new RegExp(mgr0);
-      if (re.test(fp[1])) {
+      if (re.test(rootArr[1])) {
         re = /.$/;
         w = w.replace(re, "");
       }
     } else if (re2.test(w)) {
-      var fp = re2.exec(w);
-      stem = fp[1];
+      let rootArr = re2.exec(w);
+      let stem = rootArr[1];
       re2 = new RegExp(s_v);
       if (re2.test(stem)) {
         w = stem;
         re2 = /(at|bl|iz)$/;
-        re3 = new RegExp("([^aeiouylsz])\\1$");
-        re4 = new RegExp("^" + C + v + "[^aeiouwxy]$");
+        let re3 = new RegExp("([^aeiouylsz])\\1$");
+        let re4 = new RegExp("^" + C + v + "[^aeiouwxy]$");
         if (re2.test(w)) {
           w = w + "e";
         } else if (re3.test(w)) {
@@ -109,89 +100,122 @@ var stemmer = (function () {
         }
       }
     }
+    return w;
+  }
 
-    // Step 1c
-    re = /^(.+?)y$/;
+  step1c(w) {
+    let re = /^(.+?)y$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
+      let rootArr = re.exec(w);
+      let stem = rootArr[1];
       re = new RegExp(s_v);
       if (re.test(stem)) {
         w = stem + "i";
       }
     }
+    return w;
+  }
 
-    // Step 2
-    re =
+  step2(w) {
+    let re =
       /^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      suffix = fp[2];
+      let rootArr = re.exec(w);
+      let stem = rootArr[1];
+      let suffix = rootArr[2];
       re = new RegExp(mgr0);
       if (re.test(stem)) {
-        w = stem + step2list[suffix];
+        // console.log(suffix);
+        w = stem + step2List[suffix];
       }
     }
+    return w;
+  }
 
-    // Step 3
-    re = /^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/;
+  step3(w) {
+    let re = /^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      suffix = fp[2];
+      let rootArr = re.exec(w);
+      let stem = rootArr[1];
+      let suffix = rootArr[2];
       re = new RegExp(mgr0);
       if (re.test(stem)) {
-        w = stem + step3list[suffix];
+        w = stem + step3List[suffix];
       }
     }
+    return w;
+  }
 
-    // Step 4
-    re =
+  step4(w) {
+    let re =
       /^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/;
-    re2 = /^(.+?)(s|t)(ion)$/;
+    let re2 = /^(.+?)(s|t)(ion)$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
+      let rootArr = re.exec(w);
+      let stem = rootArr[1];
       re = new RegExp(mgr1);
       if (re.test(stem)) {
         w = stem;
       }
     } else if (re2.test(w)) {
-      var fp = re2.exec(w);
-      stem = fp[1] + fp[2];
+      let rootArr = re2.exec(w);
+      let stem = rootArr[1] + rootArr[2];
       re2 = new RegExp(mgr1);
       if (re2.test(stem)) {
         w = stem;
       }
     }
+    return w;
+  }
 
-    // Step 5
-    re = /^(.+?)e$/;
+  step5a(w) {
+    let re = /^(.+?)e$/;
     if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
+      let rootArr = re.exec(w);
+      let stem = rootArr[1];
       re = new RegExp(mgr1);
-      re2 = new RegExp(meq1);
-      re3 = new RegExp("^" + C + v + "[^aeiouwxy]$");
+      let re2 = new RegExp(meq1);
+      let re3 = new RegExp("^" + C + v + "[^aeiouwxy]$");
       if (re.test(stem) || (re2.test(stem) && !re3.test(stem))) {
         w = stem;
       }
     }
+    return w;
+  }
 
-    re = /ll$/;
-    re2 = new RegExp(mgr1);
+  step5b(w) {
+    let re = /ll$/;
+    let re2 = new RegExp(mgr1);
     if (re.test(w) && re2.test(w)) {
       re = /.$/;
       w = w.replace(re, "");
     }
-
-    // and turn initial Y back to y
-
-    if (firstch == "y") {
-      w = firstch.toLowerCase() + w.substr(1);
-    }
-
     return w;
-  };
-})();
+  }
+
+  stem(w) {
+    const {
+      step1a,
+      step1b,
+      step1c,
+      step2,
+      step3,
+      step4,
+      step5a,
+      step5,
+      step5b,
+    } = this;
+    if (w.length < 3) return w;
+    const firstChar = w.substring(0, 1);
+    if (firstChar === "y") {
+      w = firstChar.toUpperCase() + w.substring(1);
+    }
+    w = step5b(step5a(step4(step3(step2(step1c(step1b(step1a(w))))))));
+    if (firstChar === "Y") {
+      w = firstChar.toLowerCase() + w.substring(1);
+    }
+    return w;
+  }
+}
+
+module.exports = new PorterStemmer();
