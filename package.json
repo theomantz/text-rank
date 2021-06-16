@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/theomantz/text-rank#readme",
   "dependencies": {
-    "sentence-splitter": "^3.2.2",
     "wink-pos-tagger": "^2.2.2"
   },
   "devDependencies": {

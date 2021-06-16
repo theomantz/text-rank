@@ -1,2 +1,9 @@
-// Using an external library for sentence splitting and other
-// lexonographical concerns for first versioning
+// Sentence Splitter Class extends Splitter Class
+const Splitter = require("./Splitter");
+
+// RegExp Patterns
+const newLine = /((?:\r?\n|\r)+)/;
+
+class SentenceSplitter extends Splitter {}
+
+module.exports = SentenceSplitter;
