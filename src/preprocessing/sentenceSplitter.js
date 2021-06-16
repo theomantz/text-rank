@@ -38,12 +38,3 @@ class SentenceSplitter extends Splitter {
 }
 
 module.exports = SentenceSplitter;
-const input =
-  "This string is a bit harder. \r \r It has some extra stuff in it \n so there's a good way to normalize; and split               ";
-
-function main(s) {
-  const splitter = new SentenceSplitter();
-  return splitter.sentences(s);
-}
-
-console.log(main(input));
