@@ -1,6 +1,6 @@
 // Unit test for sentence-splitter
 
-const SentenceSplitter = require("../../src/preprocessing/SentenceSplitter");
+const SentenceSplitter = require("../../src/utilities/SentenceSplitter");
 
 const inputString =
   "This is some sample text. It has a few lines. Some lines are really long... And others, are quite short. I think if we keep going we should cover all of our bases here but just in case.";
