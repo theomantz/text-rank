@@ -1,5 +1,5 @@
 // Unit tests for text validation
-const textValidation = require("../../src/preprocessing/textValidation");
+const textValidation = require("../../src/utilities/textValidation");
 const correct = "This is a correct text string.";
 const invalidType = new Array(5);
 const invalidLength = "";

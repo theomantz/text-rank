@@ -1,5 +1,5 @@
 // Testing the PorterStemmer object methods.
-const PorterStemmer = require("../../src/preprocessing/PorterStemmer");
+const PorterStemmer = require("../../src/utilities/PorterStemmer");
 
 /* beforeAll(() => {
   const porterStemmer = new PorterStemmer();
