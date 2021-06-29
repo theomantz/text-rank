@@ -1,6 +1,6 @@
 # Readme
 
-You can read the original research paper for the TestRank algorithm [here](https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf)
+You can read the original research paper for the TextRank algorithm [here](https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf)
 
 ## The following process description is not a final readme but to help the developer work through the process
 

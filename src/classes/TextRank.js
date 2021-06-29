@@ -1,5 +1,5 @@
 // Class Imports
-const Token = require("./Token");
+
 const SentenceSplitter = require("../utilities/SentenceSplitter");
 // import Lexer from "./Lexer";
 
@@ -20,7 +20,10 @@ class TextRank {
     dampingCoeff = 0.85,
     minDiff = 0.00001,
     steps = 10,
-    nodeWeight = null
+    nodeWeight = null,
+    string = null,
+    sentences = null,
+    words = null
   ) {
     this.pos = this.normalizePos(PoS);
   }
@@ -99,8 +102,16 @@ class TextRank {
     if (typeof string !== "string") {
       throw new ValidationError("rank method argument must be of type string");
     }
+
+    // const lexer = new Lexer(this.PoS);
+
     this.string = string;
     this.sentences = SentenceSplitter.sentences(string);
+    this.words = new Array(this.sentences.length);
+
+    for (let i = 0; i < this.sentences.length; i++) {
+      // this.words[i] =
+    }
   }
 }
 
