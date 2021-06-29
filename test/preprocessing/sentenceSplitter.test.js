@@ -11,7 +11,6 @@ const outputString = [
   "Some lines are really long",
   "And others",
   "are quite short",
-  "I think if we keep going we should cover all of our bases here but just in case",
 ];
 
 const complexInputString =
