@@ -6,6 +6,12 @@ const newLine = /((?:\r?\n|\r)+)/;
 const clean = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 const punctuation = /[,-./]/g;
 class SentenceSplitter extends Splitter {
+  /**
+   *
+   * @param {string} str
+   * @returns an Array of split sentences
+   */
+
   newLine(str) {
     return str.split(newLine);
   }
