@@ -1,5 +1,6 @@
 // Class Imports
 const Token = require("./Token");
+const SentenceSplitter = require("../utilities/SentenceSplitter");
 // import Lexer from "./Lexer";
 
 // Error Class Imports
@@ -74,7 +75,7 @@ class TextRank {
       // Check that each value in the pos array is of type string
       // Throw validation error if not
       if (typeof pos[i] !== "string") {
-        throw new ValidationError("Candidate PoS tags must be strings");
+        throw new ValidationError("candidate PoS tags must be of type string");
       }
       let candidate = pos[i].toUpperCase();
       if (candidate === "N") {
@@ -86,12 +87,20 @@ class TextRank {
           POS.add(candidate);
         } else {
           throw new ValidationError(
-            "Candidate PoS tags must be chosen from the available tags. Available tags are listed in the README"
+            "candidate PoS tags must be chosen from the available tags. available tags are listed in the README"
           );
         }
       }
     }
     return POS;
+  }
+
+  rank(string) {
+    if (typeof string !== "string") {
+      throw new ValidationError("rank method argument must be of type string");
+    }
+    this.string = string;
+    this.sentences = SentenceSplitter.sentences(string);
   }
 }
 

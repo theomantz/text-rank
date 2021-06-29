@@ -21,6 +21,9 @@ const validAndInvalid = [
 const unNormalizedTags = ["pos", "jjr", "prp$"];
 const normalizedTags = new Set(["POS", "JJR", "PRP$"]);
 
+const validRankInput = "This is a valid input of type string";
+const invalidRankInput = 12345;
+
 describe("TextRank", () => {
   describe("Tag Error Handling", () => {
     describe("Valid Tags", () => {
@@ -45,6 +48,15 @@ describe("TextRank", () => {
     describe("Normalize Tags", () => {
       test("It should return a new Set object of normalized tags", () => {
         expect(new TextRank(unNormalizedTags).pos).toEqual(normalizedTags);
+      });
+    });
+  });
+  describe("Rank Method", () => {
+    describe("Valid Input", () => {
+      test("It should not throw an error when provided with a valid input", () => {
+        expect(new TextRank().rank(validRankInput)).not.toThrowError(
+          ValidationError
+        );
       });
     });
   });
