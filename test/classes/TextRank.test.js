@@ -24,6 +24,18 @@ const normalizedTags = new Set(["POS", "JJR", "PRP$"]);
 const validRankInput = "This is a valid input of type string";
 const invalidRankInput = 12345;
 
+const inputString =
+  "This is some sample text. It has a few lines. Some lines are really long... And others, are quite short. I think if we keep going we should cover all of our bases here but just in case.";
+
+const outputString = [
+  "This is some sample text",
+  "It has a few lines",
+  "Some lines are really long",
+  "And others",
+  "are quite short",
+  "I think if we keep going we should cover all of our bases here but just in case",
+];
+
 describe("TextRank", () => {
   describe("Tag Error Handling", () => {
     describe("Valid Tags", () => {
@@ -54,9 +66,21 @@ describe("TextRank", () => {
   describe("Rank Method", () => {
     describe("Valid Input", () => {
       test("It should not throw an error when provided with a valid input", () => {
-        expect(new TextRank().rank(validRankInput)).not.toThrowError(
+        expect(() => new TextRank().rank(validRankInput)).not.toThrowError(
           ValidationError
         );
+      });
+      test("It should throw an error when provided with an invalid input", () => {
+        expect(() => new TextRank().rank(invalidRankInput)).toThrowError(
+          ValidationError
+        );
+      });
+    });
+    describe("Valid Splitting", () => {
+      test("It should properly split a string into sentences", () => {
+        const tr = new TextRank();
+        tr.rank(inputString);
+        expect(tr.sentences).toEqual(outputString);
       });
     });
   });

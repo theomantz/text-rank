@@ -43,4 +43,4 @@ class SentenceSplitter extends Splitter {
   }
 }
 
-module.exports = SentenceSplitter;
+module.exports = new SentenceSplitter();
