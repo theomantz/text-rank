@@ -3,6 +3,12 @@
 class Token {
   constructor(w) {
     this.word = w;
+    this.pos = undefined;
+  }
+
+  setPoS(pos) {
+    this.pos = pos;
+    return { word: this.word, pos: this.pos };
   }
 }
 

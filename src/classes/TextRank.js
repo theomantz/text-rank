@@ -110,7 +110,7 @@ class TextRank {
     this.words = new Array(this.sentences.length);
 
     for (let i = 0; i < this.sentences.length; i++) {
-      // this.words[i] =
+      // this.words[i] =z
     }
   }
 }
