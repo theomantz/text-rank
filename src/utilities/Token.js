@@ -4,6 +4,7 @@
   if there are multiple for the word, one will be chosen based on highest priority in
   text-rank calculation
  */
+const lexicon = require("../lib/lexicon");
 
 class Token {
   /**
@@ -11,14 +12,36 @@ class Token {
    * @param {String} w word to be tokenized
    * @param {String} pos pos tag from the lexicon which will be used for ranking
    */
-  constructor(w, pos = null) {
+  constructor(w) {
     this.word = w;
-    this.pos = pos;
+    this.pos = assignPoS(w);
   }
 
-  setPoS(pos) {
-    this.pos = pos;
-    return { word: this.word, pos: this.pos };
+  /**
+   *
+   * @param {String} word the word to be takenized with a PoS tag
+   * @returns {String} PoS tag to be assigned to the word in the token
+   */
+
+  assignPoS(word) {
+    if (!lexicon[word]) return null;
+    if (lexicon[word].length === 1) return lexicon[word][0];
+    const posSet = new Set([
+      "NN",
+      "NNP",
+      "NNPS",
+      "NNS",
+      "VB",
+      "VBD",
+      "VBG",
+      "VBN",
+      "VBP",
+      "VBZ",
+    ]);
+    for (let i = 0; i < lexicon[word].length; i++) {
+      if (posSet.has(lexicon[word][i])) return lexicon[word][i];
+    }
+    return lexicon[word][0];
   }
 }
 
