@@ -4,7 +4,7 @@
   if there are multiple for the word, one will be chosen based on highest priority in
   text-rank calculation
  */
-const lexicon = require("../lib/lexicon");
+const Lexicon = require("../utilities/Lexicon");
 
 class Token {
   /**
@@ -24,8 +24,9 @@ class Token {
    */
 
   assignPoS(word) {
-    if (!lexicon[word]) return null;
-    if (lexicon[word].length === 1) return lexicon[word][0];
+    if (!Lexicon.has(word)) return null;
+    const tags = Lexicon.get(word);
+    if (tags.length === 1) return tags[0];
     const posSet = new Set([
       "NN",
       "NNP",
@@ -38,10 +39,10 @@ class Token {
       "VBP",
       "VBZ",
     ]);
-    for (let i = 0; i < lexicon[word].length; i++) {
-      if (posSet.has(lexicon[word][i])) return lexicon[word][i];
+    for (let i = 0; i < tags.length; i++) {
+      if (posSet.has(tags[i])) return tags[i];
     }
-    return lexicon[word][0];
+    return tags[0];
   }
 }
 
