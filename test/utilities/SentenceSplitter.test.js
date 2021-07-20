@@ -34,11 +34,7 @@ const complexOutput2 = [
 ];
 
 describe("SentenceSplitter", () => {
-  let splitter;
-
-  beforeAll(() => {
-    splitter = new SentenceSplitter();
-  });
+  const splitter = SentenceSplitter;
 
   describe("The newLine method", () => {
     describe("It should not split strings at punctuation", () => {

@@ -4,7 +4,6 @@
   if there are multiple for the word, one will be chosen based on highest priority in
   text-rank calculation
  */
-const Lexicon = require("../utilities/Lexicon");
 
 class Token {
   /**
@@ -14,7 +13,7 @@ class Token {
    */
   constructor(w) {
     this.word = w;
-    this.pos = assignPoS(w);
+    this.pos = this.assignPoS(w);
   }
 
   /**

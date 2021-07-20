@@ -21,20 +21,29 @@ class TextRank {
     minDiff = 0.00001,
     steps = 10,
     nodeWeight = null,
-    string = null,
-    sentences = null,
-    words = null
+    string = null
   ) {
     this.pos = this.normalizePos(PoS);
+    this.dampingCoeff = dampingCoeff;
+    this.minDiff = minDiff;
+    this.steps = steps;
+    this.nodeWeight = nodeWeight;
+    this.string = string;
+    this.sentences = null;
+    this.words = null;
   }
 
   /**
-   *
+   * A function which normalizes user inputted PoS tags
+   * Checks for inclusivity in candidate PoS tag set
+   * Allows for some short hand notation e.g. 'N' adds all of the noun-type
+   * PoS tags to the admitted PoS tag set object
    * @param {[String]} pos candidate PoS tags
    * @returns {Set({String})} a Set object of user chosen PoS Tags
    */
 
   normalizePos(pos) {
+    // Initialize set object with all candidate PoS tags
     const candidateTags = new Set([
       "CC",
       "CD",
@@ -98,19 +107,33 @@ class TextRank {
     return POS;
   }
 
+  /**
+   * Simple function for encapsulation of the splitting of the main string
+   * into sentences
+   * @param {String} str input string to be split into sentences
+   * @returns {[String]} array of sentence strings
+   */
+
+  sentences(str) {
+    return SentenceSplitter.sentences(str);
+  }
+
+  /**
+   * The main ranking function
+   * @param {String} string the text string which will be ranked
+   */
+
   rank(string) {
     if (typeof string !== "string") {
       throw new ValidationError("rank method argument must be of type string");
     }
 
-    // const lexer = new Lexer(this.PoS);
-
     this.string = string;
-    this.sentences = SentenceSplitter.sentences(string);
+    this.sentences = sentences(string);
     this.words = new Array(this.sentences.length);
 
     for (let i = 0; i < this.sentences.length; i++) {
-      // this.words[i] =z
+      // this.words[i] = z
     }
   }
 }

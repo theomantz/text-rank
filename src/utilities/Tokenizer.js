@@ -1,12 +1,8 @@
 const Token = require("./Token");
-const lexicon = require("../lib/lexicon");
+const Lexicon = require("../utilities/Lexicon");
 
-class Tokenizer {
-  /**
-   *
-   * @param {[string]} tags
-   */
-  constructor(tags) {
-    this.tags = tags;
-  }
+function tokenizer(word) {
+  return new Token(word);
 }
+
+module.exports = tokenizer;
