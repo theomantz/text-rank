@@ -33,7 +33,7 @@ const complexOutput2 = [
   "so theres a good way to normalize and split",
 ];
 
-describe("sentenceSplitter", () => {
+describe("SentenceSplitter", () => {
   let splitter;
 
   beforeAll(() => {
