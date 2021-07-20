@@ -27,7 +27,6 @@ class TextRank {
     this.minDiff = this.checkFloat(minDiff) ? minDiff : 0.00001;
     this.steps = this.checkInt(steps) ? steps : 10;
     this.nodeWeight = nodeWeight;
-    this.string = string;
     this.sentences = null;
     this.tokens = [];
     this.words = [];
