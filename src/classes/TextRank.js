@@ -1,7 +1,7 @@
 // Class Imports
 
 const SentenceSplitter = require("../utilities/SentenceSplitter");
-// import Lexer from "./Lexer";
+const Token = require("../utilities/Token");
 
 // Error Class Imports
 const ValidationError = require("../errors/ValidationError");
@@ -30,7 +30,8 @@ class TextRank {
     this.nodeWeight = nodeWeight;
     this.string = string;
     this.sentences = null;
-    this.words = null;
+    this.tokens = [];
+    this.words = [];
   }
 
   /**
@@ -119,21 +120,46 @@ class TextRank {
   }
 
   /**
+   * createTokens function which takes the input string and creates a token array
+   * which is then assigned as an object property
+   * @param {String} string input string
+   *
+   */
+
+  createTokens(string) {
+    // Save the input string as an object property
+    this.string = string;
+    // Split the string into sentences using the StringSplitter class method
+    this.sentences = this.splitSentences(string);
+    // Instatiate the object property tokens array to store the tokenized words
+    this.tokens = new Array(this.sentences.length);
+
+    // Iterate over the split sentences
+    for (let i = 0; i < this.sentences.length; i++) {
+      // Set the object property words array at index position i to the sentence
+      // from the sentences array index position i split at whitespace which results in
+      // An array of words
+      this.words[i] = this.sentences[i].split(" ");
+      for (let j = 0; j < this.words[i].length; j++) {
+        // Trim the words of whitespace
+        this.words[i][j] = this.words[i][j].trim();
+        // Create a new token using the word
+        let token = new Token(this.words[i][j]);
+        // Add the token to the tokens array if it contains a PoS tag && PoS tag is in set object
+        if (token.pos && this.pos.has(token.pos)) tokens[i].push(token);
+      }
+    }
+  }
+
+  /**
    * The main ranking function
    * @param {String} string the text string which will be ranked
    */
 
   rank(string) {
+    // Check if input type is String, if not throw a validation error
     if (typeof string !== "string") {
       throw new ValidationError("rank method argument must be of type string");
-    }
-
-    this.string = string;
-    this.sentences = this.splitSentences(string);
-    this.words = new Array(this.sentences.length);
-
-    for (let i = 0; i < this.sentences.length; i++) {
-      // this.words[i] = z
     }
   }
 }

@@ -24,6 +24,8 @@ describe("Token", () => {
         expect(tokens[2].word).toEqual(words[2]);
         expect(tokens[2].pos).toEqual("NN");
       });
+    });
+    describe("It should not assign PoS tags to words which do not exist in the lexicon", () => {
       test("Charles Bukowski", () => {
         expect(tokens[3].word).toEqual(words[3]);
         expect(tokens[3].pos).toBe(null);
