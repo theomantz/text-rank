@@ -8,7 +8,7 @@ const ValidationError = require("../errors/ValidationError");
 
 class TextRank {
   /**
-   *
+   * constructor method to create a new instance of the text rank class
    * @param {[String]} PoS PoS candidate tags defaults to [all nouns, all verbs]
    * @param {Float} dampingCoeff the dampening coefficient, defaults to 0.85
    * @param {Float} minDiff the convergence threshold defaults to 0.00001
@@ -20,18 +20,37 @@ class TextRank {
     dampingCoeff = 0.85,
     minDiff = 0.00001,
     steps = 10,
-    nodeWeight = null,
-    string = null
+    nodeWeight = null
   ) {
     this.pos = this.normalizePos(PoS);
-    this.dampingCoeff = dampingCoeff;
-    this.minDiff = minDiff;
-    this.steps = steps;
+    this.dampingCoeff = this.checkFloat(dampingCoeff) ? dampingCoeff : 0.85;
+    this.minDiff = this.checkFloat(minDiff) ? minDiff : 0.00001;
+    this.steps = this.checkInt(steps) ? steps : 10;
     this.nodeWeight = nodeWeight;
     this.string = string;
     this.sentences = null;
     this.tokens = [];
     this.words = [];
+  }
+
+  /**
+   * a function to check if an input is of type float
+   * @param {Number} n object to be checked
+   * @returns Boolean value indicating whether or not object is type float
+   */
+
+  checkFloat(n) {
+    return Number(n) === n && n % 1 !== 0;
+  }
+
+  /**
+   * a function to check if an inptu is of type integer
+   * @param {Number} n input object to be checked
+   * @returns Boolean value indicating whether or not an object is type integer
+   */
+
+  checkInt(n) {
+    return Number(n) === n && n % 1 === 0;
   }
 
   /**
@@ -44,6 +63,11 @@ class TextRank {
    */
 
   normalizePos(pos) {
+    // Check that input is an instance of the Array objet
+    if (!(pos instanceof Array)) {
+      throw new ValidationError("PoS tags must be inputted as an array");
+    }
+
     // Initialize set object with all candidate PoS tags
     const candidateTags = new Set([
       "CC",
@@ -161,6 +185,9 @@ class TextRank {
     if (typeof string !== "string") {
       throw new ValidationError("rank method argument must be of type string");
     }
+
+    // Assemble tokens object property
+    this.createTokens(string);
   }
 }
 
