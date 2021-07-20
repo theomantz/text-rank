@@ -3,8 +3,7 @@ const Token = require("../../src/utilities/Token");
 const words = ["feeling", "plant", "mobster", "Charles Bukowski"];
 
 describe("Token", () => {
-  let tokens;
-  const Lexicon = require("../../src/utilities/Lexicon");
+  let tokens = [];
   beforeAll(() => {
     for (let i = 0; i < words.length; i++) {
       tokens[i] = new Token(words[i]);
@@ -27,7 +26,7 @@ describe("Token", () => {
       });
       test("Charles Bukowski", () => {
         expect(tokens[3].word).toEqual(words[3]);
-        expect(tokens[2].pos).toBe(null);
+        expect(tokens[3].pos).toBe(null);
       });
     });
   });

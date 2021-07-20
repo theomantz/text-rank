@@ -114,7 +114,7 @@ class TextRank {
    * @returns {[String]} array of sentence strings
    */
 
-  sentences(str) {
+  splitSentences(str) {
     return SentenceSplitter.sentences(str);
   }
 
@@ -129,7 +129,7 @@ class TextRank {
     }
 
     this.string = string;
-    this.sentences = sentences(string);
+    this.sentences = this.splitSentences(string);
     this.words = new Array(this.sentences.length);
 
     for (let i = 0; i < this.sentences.length; i++) {

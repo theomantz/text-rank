@@ -5,6 +5,8 @@
   text-rank calculation
  */
 
+const Lexicon = require("../utilities/Lexicon");
+
 class Token {
   /**
    *
@@ -24,7 +26,7 @@ class Token {
 
   assignPoS(word) {
     if (!Lexicon.has(word)) return null;
-    const tags = Lexicon.get(word);
+    const tags = Lexicon.getTags(word);
     if (tags.length === 1) return tags[0];
     const posSet = new Set([
       "NN",
