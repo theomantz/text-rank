@@ -9,7 +9,7 @@ const ValidationError = require("../errors/ValidationError");
 class TextRank {
   /**
    * constructor method to create a new instance of the text rank class
-   * @param {[String]} PoS PoS candidate tags defaults to [all nouns, all verbs]
+   * @param {[String]} PoS PoS candidate tags defaults to [N: all nouns, V: all verbs]
    * @param {Float} dampingCoeff the dampening coefficient, defaults to 0.85
    * @param {Float} minDiff the convergence threshold defaults to 0.00001
    * @param {Integer} steps the number of iteration steps defaults to 10
