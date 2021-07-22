@@ -185,7 +185,7 @@ class TextRank {
       throw new ValidationError("rank method argument must be of type string");
     }
 
-    // Assemble tokens object property
+    // Assemble the tokens object property
     this.createTokens(string);
   }
 }
