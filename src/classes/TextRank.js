@@ -159,6 +159,8 @@ class TextRank {
     return SentenceSplitter.sentences(str);
   }
 
+  splitWords(str) {}
+
   /**
    * createTokens function which takes the input string and creates a token array
    * which is then assigned as an object property
@@ -197,13 +199,15 @@ class TextRank {
    */
 
   rank(string) {
-    // Check if input type is String, if not throw a validation error
+    const { type } = this;
     if (typeof string !== "string") {
       throw new ValidationError("rank method argument must be of type string");
     }
-
+    // Check which type of ranking is being performed
+    if (type === "k") {
+      this.createTokens(string);
+    }
     // Assemble the tokens object property
-    this.createTokens(string);
   }
 }
 

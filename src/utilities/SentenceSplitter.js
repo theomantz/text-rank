@@ -60,6 +60,10 @@ class SentenceSplitter extends Splitter {
     }
     return result;
   }
+
+  words(str) {
+    return str.split(" ");
+  }
 }
 
 // Exporting a new instance of class since there is no need to create a new instance
