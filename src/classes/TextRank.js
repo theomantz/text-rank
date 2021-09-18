@@ -16,23 +16,30 @@ class TextRank {
    * @param {Integer} steps the number of iteration steps defaults to 10
    * @param {Integer} nodeWeight
    */
-  constructor(
+  constructor({
     type = "k",
-    PoS = ["N", "V"],
+    PoS = ["N", "J"],
     dampingCoeff = 0.85,
     minDiff = 0.00001,
     steps = 10,
-    nodeWeight = null
-  ) {
+    nodeWeight = null,
+    windowSize = 2,
+  }) {
     this.type = this.checkType(type) ? type : "k";
     this.pos = this.normalizePos(PoS);
     this.dampingCoeff = this.checkFloat(dampingCoeff) ? dampingCoeff : 0.85;
     this.minDiff = this.checkFloat(minDiff) ? minDiff : 0.00001;
     this.steps = this.checkInt(steps) ? steps : 10;
     this.nodeWeight = nodeWeight;
+    this.windowSize = this.checkWindowSize(windowSize) ? windowSize : 2;
     this.sentences = null;
     this.tokens = [];
     this.words = [];
+    this.graph = {
+      V: {},
+      E: {},
+      numVerts: 0,
+    };
   }
 
   /**
@@ -140,7 +147,7 @@ class TextRank {
           POS.add(candidate);
         } else {
           throw new ValidationError(
-            "candidate PoS tags must be chosen from the available tags. available tags are listed in the README"
+            `${candidate} is not a valid PoS tag. Available PoS tags are listed in the README`
           );
         }
       }
@@ -184,7 +191,7 @@ class TextRank {
         // Trim the words of whitespace
         this.words[i][j] = this.words[i][j].trim();
         // Create a new token using the word
-        let token = new Token(this.words[i][j]);
+        let token = new Token(this.words[i][j].toLowerCase());
         // Add the token to the tokens array if it contains a PoS tag && PoS tag is in set object
         if (token.pos && this.pos.has(token.pos)) tokens[i].push(token);
       }

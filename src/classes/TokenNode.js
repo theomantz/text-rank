@@ -2,8 +2,9 @@ const Token = require("../utilities/Token");
 
 class TokenNode extends Token {
   constructor(val) {
-    this.val = val;
-    this.children = new Set();
+    super(val);
+    this.pre = new Set();
+    this.post = new Set();
     this.score = 1;
   }
 }
