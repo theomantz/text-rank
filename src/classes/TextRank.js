@@ -1,7 +1,7 @@
 // Class Imports
 
 const SentenceSplitter = require("../utilities/SentenceSplitter");
-const Token = require("../utilities/Token");
+const TokenNode = require("./TokenNode");
 
 // Error Class Imports
 const ValidationError = require("../errors/ValidationError");
@@ -158,8 +158,6 @@ class TextRank {
   splitSentences(str) {
     return SentenceSplitter.sentences(str);
   }
-
-  splitWords(str) {}
 
   /**
    * createTokens function which takes the input string and creates a token array

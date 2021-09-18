@@ -33,6 +33,10 @@ const complexOutput2 = [
   "so theres a good way to normalize and split",
 ];
 
+const sentenceForWords = "This is a sentence being split for words";
+const complexSentenceForWords =
+  "This    has ,,, more     noise! ....... to filter";
+
 describe("SentenceSplitter", () => {
   const splitter = SentenceSplitter;
 
