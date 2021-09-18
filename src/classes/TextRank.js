@@ -9,6 +9,7 @@ const ValidationError = require("../errors/ValidationError");
 class TextRank {
   /**
    * constructor method to create a new instance of the text rank class
+   * @param {String} type Type of extraction to perform; keyword - k, sentence - s;
    * @param {[String]} PoS PoS candidate tags defaults to [N: all nouns, V: all verbs]
    * @param {Float} dampingCoeff the dampening coefficient, defaults to 0.85
    * @param {Float} minDiff the convergence threshold defaults to 0.00001
@@ -16,12 +17,14 @@ class TextRank {
    * @param {Integer} nodeWeight
    */
   constructor(
+    type = "k",
     PoS = ["N", "V"],
     dampingCoeff = 0.85,
     minDiff = 0.00001,
     steps = 10,
     nodeWeight = null
   ) {
+    this.type = this.checkType(type) ? type : "k";
     this.pos = this.normalizePos(PoS);
     this.dampingCoeff = this.checkFloat(dampingCoeff) ? dampingCoeff : 0.85;
     this.minDiff = this.checkFloat(minDiff) ? minDiff : 0.00001;
@@ -30,6 +33,18 @@ class TextRank {
     this.sentences = null;
     this.tokens = [];
     this.words = [];
+  }
+
+  /**
+   * checking if the inputted type is a string and matches one of the acceptable
+   * types. If not, returning k and algorithm will perform keyword extraction
+   * @param {String} type type of extration to perform
+   * @returns boolean
+   */
+
+  checkType(type) {
+    type = type.toLowerCase();
+    return String(type) === type && (type === "k" || type === "s");
   }
 
   /**
@@ -118,6 +133,8 @@ class TextRank {
         POS.add(["NN", "NNP", "NNPS", "NNS"]);
       } else if (candidate === "V") {
         POS.add(["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"]);
+      } else if (candidate === "J") {
+        POS.add(["JJ", "JJR", "JJS"]);
       } else {
         if (candidateTags.has(candidate)) {
           POS.add(candidate);
