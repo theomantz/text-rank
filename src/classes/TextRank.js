@@ -5,6 +5,7 @@ const TokenNode = require("./TokenNode");
 
 // Error Class Imports
 const ValidationError = require("../errors/ValidationError");
+const { windows } = require("../lib/lexicon");
 
 class TextRank {
   /**
@@ -199,6 +200,26 @@ class TextRank {
   }
 
   /**
+   * building the graph. process is dependent on type of ranking system chosen
+   *
+   */
+
+  setupGraph() {
+    const { tokens, type, windowSize } = this;
+    if (type === "k") {
+      for (let i = 0; i < tokens.length; i++) {
+        const Si = tokens[i];
+        let start = i - windowSize < 0 ? 0 : i - windowSize;
+        let end =
+          i + windowSize > tokens.length ? tokens.length : i + windowSize;
+        for (let j = start; j < end; j++) {
+          const Sj = tokens[j];
+        }
+      }
+    }
+  }
+
+  /**
    * The main ranking function
    * @param {String} string the text string which will be ranked
    */
@@ -211,6 +232,7 @@ class TextRank {
     // Check which type of ranking is being performed
     if (type === "k") {
       this.createTokens(string);
+      this.setupGraph();
     }
     // Assemble the tokens object property
   }
