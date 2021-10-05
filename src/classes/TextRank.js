@@ -5,7 +5,6 @@ const TokenNode = require("./TokenNode");
 
 // Error Class Imports
 const ValidationError = require("../errors/ValidationError");
-const { windows } = require("../lib/lexicon");
 
 class TextRank {
   /**
@@ -37,8 +36,8 @@ class TextRank {
     this.tokens = [];
     this.words = [];
     this.graph = {
-      V: {},
-      E: {},
+      V: new Set(),
+      E: new Set(),
       numVerts: 0,
     };
   }
@@ -192,7 +191,7 @@ class TextRank {
         // Trim the words of whitespace
         this.words[i][j] = this.words[i][j].trim();
         // Create a new token using the word
-        let token = new Token(this.words[i][j].toLowerCase());
+        let token = new TokenNode(this.words[i][j].toLowerCase());
         // Add the token to the tokens array if it contains a PoS tag && PoS tag is in set object
         if (token.pos && this.pos.has(token.pos)) tokens[i].push(token);
       }
@@ -205,15 +204,23 @@ class TextRank {
    */
 
   setupGraph() {
-    const { tokens, type, windowSize } = this;
+    const { tokens, type, windowSize, graph } = this;
+    // Check for rank type, if type 'k' execute this condition
+    // Add the tokens to the graph as verts
+    graph.V.add(tokens);
+    graph.numVerts = graph.V.size;
     if (type === "k") {
+      // Iterate through the list of tokens
       for (let i = 0; i < tokens.length; i++) {
         const Si = tokens[i];
         let start = i - windowSize < 0 ? 0 : i - windowSize;
         let end =
           i + windowSize > tokens.length ? tokens.length : i + windowSize;
         for (let j = start; j < end; j++) {
-          const Sj = tokens[j];
+          if (i !== j) {
+            const Sj = tokens[j];
+            graph.E.add(Sj);
+          }
         }
       }
     }
