@@ -5,6 +5,7 @@ class TokenNode extends Token {
     super(val);
     this.pre = new Set();
     this.post = new Set();
+    this.id = null;
     this.score = Math.random() * 10 + 1;
   }
 }

@@ -18,20 +18,22 @@ class TextRank {
    */
   constructor({
     type = "k",
-    PoS = ["N", "J"],
+    pos = ["N", "J"],
     dampingCoeff = 0.85,
     minDiff = 0.00001,
     steps = 10,
     nodeWeight = null,
     windowSize = 2,
+    simEquation = null,
   }) {
     this.type = this.checkType(type) ? type : "k";
-    this.pos = this.normalizePos(PoS);
+    this.pos = this.normalizePos(pos);
     this.dampingCoeff = this.checkFloat(dampingCoeff) ? dampingCoeff : 0.85;
     this.minDiff = this.checkFloat(minDiff) ? minDiff : 0.00001;
     this.steps = this.checkInt(steps) ? steps : 10;
     this.nodeWeight = nodeWeight;
     this.windowSize = this.checkWindowSize(windowSize) ? windowSize : 2;
+    this.sim = simEquation;
     this.sentences = null;
     this.tokens = [];
     this.words = [];
@@ -74,6 +76,18 @@ class TextRank {
     return Number(n) === n && n % 1 === 0;
   }
 
+  /**
+   *
+   * @param {Integer} size user inputted window size
+   * @returns {Integer} returns 2 if the user inputted size is not an integer
+   * or is too large (arbitrarily chose 10)
+   */
+  checkWindowSize(size) {
+    if (Number(size) === size && size < 10) {
+      return size;
+    }
+    return 2;
+  }
   /**
    * A function which normalizes user inputted PoS tags
    * Checks for inclusivity in candidate PoS tag set
@@ -125,7 +139,7 @@ class TextRank {
       "VBZ",
       "WDT",
       "WP",
-      "WP$",
+      "WP$", // This is actually a valid PoS tag, - Possessive-Wh
       "WRB",
     ]);
     const POS = new Set();
@@ -205,25 +219,48 @@ class TextRank {
 
   setupGraph() {
     const { tokens, type, windowSize, graph } = this;
-    // Check for rank type, if type 'k' execute this condition
+
     // Add the tokens to the graph as verts
     graph.V.add(tokens);
+
+    // Add numVerts as the size of the graph.V set
     graph.numVerts = graph.V.size;
-    if (type === "k") {
-      // Iterate through the list of tokens
-      for (let i = 0; i < tokens.length; i++) {
-        const Si = tokens[i];
-        let start = i - windowSize < 0 ? 0 : i - windowSize;
-        let end =
-          i + windowSize > tokens.length ? tokens.length : i + windowSize;
-        for (let j = start; j < end; j++) {
-          if (i !== j) {
-            const Sj = tokens[j];
-            graph.E.add(Sj);
-          }
+
+    // Check for user defined sim equation
+    this.sim =
+      this.simEquation != null ? this.simEquation : this.similarityEquation;
+
+    // Set the windowSize for the iteration
+    windowSize = type === "k" ? windowSize : graph.numVerts;
+
+    // Begin to build graph
+    // Iterate through the list of tokens
+    graph.V.forEach((token, iIndex) => {
+      const vert = graph.V[token];
+      vert.id = iIndex;
+
+      const Si = vert;
+
+      // iterate over the other tokens in the graph, add an edge when it falls within
+      // The window
+      const negDiff = iIndex - windowSize;
+      const posDiff = iIndex + windowSize;
+
+      let start = type === "k" ? (negDiff < 0 ? 0 : negDiff) : 0;
+      let end =
+        type === "k"
+          ? posDiff > graph.numVerts
+            ? graph.numVerts
+            : posDiff
+          : graph.numVerts;
+
+      for (let j = start; j < end; j++) {
+        const jIndex = j;
+
+        if (iIndex !== jIndex) {
         }
       }
-    }
+    });
   }
 
   /**

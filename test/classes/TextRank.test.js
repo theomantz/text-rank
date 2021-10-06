@@ -40,17 +40,21 @@ describe("TextRank", () => {
   describe("Tag Error Handling", () => {
     describe("Valid Tags", () => {
       test("It should not throw an error when provided an array of valid tags", () => {
-        expect(() => new TextRank(validTags)).not.toThrowError(ValidationError);
+        expect(() => new TextRank({ pos: validTags })).not.toThrowError(
+          ValidationError
+        );
       });
     });
     describe("Invalid Tags", () => {
       test("It should throw an error when provided with an array of invalid tags", () => {
-        expect(() => new TextRank(invalidTags)).toThrowError(ValidationError);
+        expect(() => new TextRank({ pos: invalidTags })).toThrowError(
+          ValidationError
+        );
       });
     });
     describe("Valid and Invalid Tags", () => {
       test("It should throw an error when provided with an array of valid and invalid tags", () => {
-        expect(() => new TextRank(validAndInvalid)).toThrowError(
+        expect(() => new TextRank({ pos: validAndInvalid })).toThrowError(
           ValidationError
         );
       });
@@ -59,26 +63,28 @@ describe("TextRank", () => {
   describe("Tag Normalization", () => {
     describe("Normalize Tags", () => {
       test("It should return a new Set object of normalized tags", () => {
-        expect(new TextRank(unNormalizedTags).pos).toEqual(normalizedTags);
+        expect(new TextRank({ pos: unNormalizedTags }).pos).toEqual(
+          normalizedTags
+        );
       });
     });
   });
   describe("Rank Method", () => {
     describe("Valid Input", () => {
       test("It should not throw an error when provided with a valid input", () => {
-        expect(() => new TextRank().rank(validRankInput)).not.toThrowError(
+        expect(() => new TextRank({}).rank(validRankInput)).not.toThrowError(
           ValidationError
         );
       });
       test("It should throw an error when provided with an invalid input", () => {
-        expect(() => new TextRank().rank(invalidRankInput)).toThrowError(
+        expect(() => new TextRank({}).rank(invalidRankInput)).toThrowError(
           ValidationError
         );
       });
     });
     describe("Valid Splitting", () => {
       test("It should properly split a string into sentences", () => {
-        const tr = new TextRank();
+        const tr = new TextRank({});
         tr.rank(inputString);
         expect(tr.sentences).toEqual(outputString);
       });
