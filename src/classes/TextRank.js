@@ -16,16 +16,51 @@ class TextRank {
    * @param {Integer} steps the number of iteration steps defaults to 10
    * @param {Integer} nodeWeight
    */
-  constructor({
-    type = "k",
-    pos = ["N", "J"],
-    dampingCoeff = 0.85,
-    minDiff = 0.00001,
-    steps = 10,
-    nodeWeight = null,
-    windowSize = 2,
-    simEquation = null,
-  }) {
+  constructor(settings) {
+    // Check if we are passed no object
+    if (!settings) {
+      settings = {
+        type: "k",
+        pos: ["N", "J"],
+        dampingCoeff: 0.85,
+        minDiff: 0.00001,
+        steps: 10,
+        nodeWeight: null,
+        windowSize: 2,
+        simEquation: null,
+      };
+    } else {
+      // Check for values for each param, enforce defaults if absent
+      settings.type = settings.type || "k";
+      settings.pos = settings.pos || ["N", "J"];
+      if (settings.dampingCoeff !== 0 && !settings.dampingCoeff) {
+        settings.dampingCoeff = 0.85;
+      }
+      if (settings.minDiff !== 0 && !settings.minDiff) {
+        settings.minDiff = 0.00001;
+      }
+      settings.steps = settings.steps || 10;
+      if (!settings.nodeWeight) {
+        settings.nodeWeight = null;
+      }
+      if (settings.windowSize !== 0 && !settings.windowSize) {
+        settings.windowSize = 2;
+      }
+      settings.simEquation = settings.simEquation || null;
+    }
+    // Deconstruct settings object for type checking before setting as
+    // object property
+    const {
+      type,
+      pos,
+      dampingCoeff,
+      minDiff,
+      steps,
+      nodeWeight,
+      windowSize,
+      simEquation,
+    } = settings;
+
     this.type = this.checkType(type) ? type : "k";
     this.pos = this.normalizePos(pos);
     this.dampingCoeff = this.checkFloat(dampingCoeff) ? dampingCoeff : 0.85;
@@ -151,11 +186,11 @@ class TextRank {
       }
       let candidate = pos[i].toUpperCase();
       if (candidate === "N") {
-        POS.add(["NN", "NNP", "NNPS", "NNS"]);
+        ["NN", "NNP", "NNPS", "NNS"].forEach((i) => POS.add(i));
       } else if (candidate === "V") {
-        POS.add(["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"]);
+        ["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"].forEach((i) => POS.add(i));
       } else if (candidate === "J") {
-        POS.add(["JJ", "JJR", "JJS"]);
+        ["JJ", "JJR", "JJS"].forEach((i) => POS.add(i));
       } else {
         if (candidateTags.has(candidate)) {
           POS.add(candidate);
@@ -192,10 +227,9 @@ class TextRank {
     this.string = string;
     // Split the string into sentences using the StringSplitter class method
     this.sentences = this.splitSentences(string);
-    // Instatiate the object property tokens array to store the tokenized words
-    this.tokens = new Array(this.sentences.length);
 
     // Iterate over the split sentences
+    // Only works for keywords at the moment
     for (let i = 0; i < this.sentences.length; i++) {
       // Set the object property words array at index position i to the sentence
       // from the sentences array index position i split at whitespace which results in
@@ -207,13 +241,13 @@ class TextRank {
         // Create a new token using the word
         let token = new TokenNode(this.words[i][j].toLowerCase());
         // Add the token to the tokens array if it contains a PoS tag && PoS tag is in set object
-        if (token.pos && this.pos.has(token.pos)) tokens[i].push(token);
+        if (token.pos && this.pos.has(token.pos)) this.tokens.push(token);
       }
     }
   }
 
   /**
-   * building the graph. process is dependent on type of ranking system chosen
+   * building the graph.
    *
    */
 
@@ -221,7 +255,7 @@ class TextRank {
     const { tokens, type, windowSize, graph } = this;
 
     // Add the tokens to the graph as verts
-    graph.V.add(tokens);
+    tokens.forEach((t) => graph.V.add(t));
 
     // Add numVerts as the size of the graph.V set
     graph.numVerts = graph.V.size;
@@ -231,21 +265,26 @@ class TextRank {
       this.simEquation != null ? this.simEquation : this.similarityEquation;
 
     // Set the windowSize for the iteration
-    windowSize = type === "k" ? windowSize : graph.numVerts;
+    const size = type === "k" ? windowSize : graph.numVerts;
 
     // Begin to build graph
     // Iterate through the list of tokens
-    graph.V.forEach((token, iIndex) => {
-      const vert = graph.V[token];
-      vert.id = iIndex;
+    let iIndex = 0;
+    const that = this;
+    graph.V.forEach((token) => {
+      const Si = token;
+      Si.id = iIndex;
 
-      const Si = vert;
+      /* iterate over the other tokens in the graph, add an edge when it falls within the window */
+      const negDiff = iIndex - size;
+      const posDiff = iIndex + size;
 
-      // iterate over the other tokens in the graph, add an edge when it falls within
-      // The window
-      const negDiff = iIndex - windowSize;
-      const posDiff = iIndex + windowSize;
-
+      /* To limit the overall graph building function to one function
+      start and end positions of the window will be determined first based on
+      the type of extraction being performed. If it is keyword extraction, then
+      ensure that the starting and ending positions dont fall out of bounds.
+      If it is sentence extraction, set the start to 0 and the end to the end
+      of the text. */
       let start = type === "k" ? (negDiff < 0 ? 0 : negDiff) : 0;
       let end =
         type === "k"
@@ -257,9 +296,12 @@ class TextRank {
       for (let j = start; j < end; j++) {
         const jIndex = j;
 
+        // To avoid self edges
         if (iIndex !== jIndex) {
+          const Sj = that.tokens[jIndex];
         }
       }
+      iIndex++;
     });
   }
 
@@ -283,3 +325,6 @@ class TextRank {
 }
 
 module.exports = TextRank;
+
+const tr = new TextRank();
+console.log(tr.rank("This is a sample string"));
