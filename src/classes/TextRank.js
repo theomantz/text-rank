@@ -13,7 +13,7 @@ class TextRank {
    * @param {[String]} PoS PoS candidate tags defaults to [N: all nouns, V: all verbs]
    * @param {Float} dampingCoeff the dampening coefficient, defaults to 0.85
    * @param {Float} minDiff the convergence threshold defaults to 0.00001
-   * @param {Integer} steps the number of iteration steps defaults to 10
+   * @param {Integer} steps the number of iteration steps defaults to 30
    * @param {Integer} nodeWeight
    */
   constructor(settings) {
@@ -24,7 +24,7 @@ class TextRank {
         pos: ["N", "J"],
         dampingCoeff: 0.85,
         minDiff: 0.00001,
-        steps: 10,
+        steps: 30,
         nodeWeight: null,
         windowSize: 2,
         simEquation: null,
@@ -39,7 +39,7 @@ class TextRank {
       if (settings.minDiff !== 0 && !settings.minDiff) {
         settings.minDiff = 0.00001;
       }
-      settings.steps = settings.steps || 10;
+      settings.steps = settings.steps || 30;
       if (!settings.nodeWeight) {
         settings.nodeWeight = null;
       }
@@ -74,7 +74,7 @@ class TextRank {
     this.words = [];
     this.graph = {
       V: new Set(),
-      E: new Set(),
+      E: {},
       numVerts: 0,
     };
   }
@@ -118,10 +118,10 @@ class TextRank {
    * or is too large (arbitrarily chose 10)
    */
   checkWindowSize(size) {
-    if (Number(size) === size && size < 10) {
+    if (Number(size) === size && size <= 10) {
       return size;
     }
-    return 2;
+    return 5;
   }
   /**
    * A function which normalizes user inputted PoS tags
@@ -247,11 +247,11 @@ class TextRank {
   }
 
   /**
-   * building the graph.
+   * building the keyword graph.
    *
    */
 
-  setupGraph() {
+  setupKeywordGraph() {
     const { tokens, type, windowSize, graph } = this;
 
     // Add the tokens to the graph as verts
@@ -274,8 +274,8 @@ class TextRank {
     graph.V.forEach((token) => {
       const Si = token;
       Si.id = iIndex;
-
-      /* iterate over the other tokens in the graph, add an edge when it falls within the window */
+      /* iterate over the other tokens in the graph, add an edge when it falls
+       within the window */
       const negDiff = iIndex - size;
       const posDiff = iIndex + size;
 
@@ -292,17 +292,47 @@ class TextRank {
             ? graph.numVerts
             : posDiff
           : graph.numVerts;
-
+      // Inner loop to check our window
       for (let j = start; j < end; j++) {
         const jIndex = j;
 
         // To avoid self edges
         if (iIndex !== jIndex) {
           const Sj = that.tokens[jIndex];
+
+          /* // If we dont have this edge in our graph, create it
+
+          I believe that with the pre and post properties of our TokenNode class
+          We have already created edges but I'm leaving this code section here
+          For reference.
+
+          if (!graph.E[Si.word]) {
+            graph.E[Si.word] = {};
+          } */
+
+          /* Check where we are in the start and end range, adding the tokens from
+          the inner loop to the pre or post sets in our outer loop token depending 
+          on whether they occur before or after our outer loop token */
+          if (jIndex < iIndex) {
+            Si.pre.add(Sj);
+          } else if (jIndex > iIndex) {
+            Si.post.add(Sj);
+          }
         }
       }
       iIndex++;
     });
+  }
+
+  // Calculate the keyword score
+  calculateKeywordScore() {
+    const that = this;
+    const { tokens, steps, graph, minDiff } = this;
+    // create a maxDiff variable to check successive differences against
+    let maxDiff = Number.POSITIVE_INFINITY;
+    // Create a count variable to check against user defined max steps
+    let count = 0;
+    while (maxDiff > minDiff && count <= steps) {}
   }
 
   /**
@@ -316,9 +346,10 @@ class TextRank {
       throw new ValidationError("rank method argument must be of type string");
     }
     // Check which type of ranking is being performed
+    this.createTokens(string);
     if (type === "k") {
-      this.createTokens(string);
-      this.setupGraph();
+      this.setupKeywordGraph();
+      this.calculateKeywordScore();
     }
     // Assemble the tokens object property
   }
